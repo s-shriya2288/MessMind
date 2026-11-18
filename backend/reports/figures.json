@@ -1,0 +1,52 @@
+[
+ {
+  "file": "correlation_heatmap.png",
+  "title": "Correlation heatmap",
+  "caption": "Attendance is the strongest driver of consumption; holidays pull everything down."
+ },
+ {
+  "file": "dish_waste_bar.png",
+  "title": "Most / least wasted dishes",
+  "caption": "Low-rated dishes such as Lauki Chana Dal and Khichdi waste the largest share."
+ },
+ {
+  "file": "preference_heatmap.png",
+  "title": "Preference heatmap",
+  "caption": "Share of survey responses at each star rating, per dish."
+ },
+ {
+  "file": "waste_category_pie.png",
+  "title": "Waste categories",
+  "caption": "Over-preparation dominates — the part a demand forecast can address."
+ },
+ {
+  "file": "daily_trend.png",
+  "title": "Daily trend",
+  "caption": "The shaded gap is avoidable over-preparation."
+ },
+ {
+  "file": "attendance_scatter.png",
+  "title": "Attendance–consumption correlation",
+  "caption": "Strong linear relationship — attendance forecasting is the key input."
+ },
+ {
+  "file": "weekday_boxplot.png",
+  "title": "Meal-wise comparison",
+  "caption": "Weekends show the largest leftovers."
+ },
+ {
+  "file": "actual_vs_predicted.png",
+  "title": "Actual vs predicted",
+  "caption": "Prediction follows demand without matching every fluctuation."
+ },
+ {
+  "file": "feature_importance.png",
+  "title": "Feature importance",
+  "caption": "Which inputs the model relies on most."
+ },
+ {
+  "file": "residuals.png",
+  "title": "Residuals",
+  "caption": "Centred near zero → no strong systematic bias."
+ }
+]

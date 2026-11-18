@@ -8,6 +8,7 @@ DB :  SQLite by default (messmind.db). Set DATABASE_URL=postgresql+psycopg://use
 from __future__ import annotations
 
 import io
+import json
 import os
 from datetime import date, datetime
 from pathlib import Path
@@ -22,14 +23,21 @@ from sqlalchemy import create_engine, inspect
 
 from messmind import analytics as A
 from messmind import data_generator as G
-from messmind import plots
 from messmind.models import DemandModel
 from messmind.preprocessing import REQUIRED_COLUMNS, add_features, clean
+
+try:  # plotting libs are optional (left out of the Vercel bundle to keep it small)
+    from messmind import plots
+except Exception:  # pragma: no cover
+    plots = None
 
 BASE = Path(__file__).parent
 REPORTS = BASE / "reports"
 FRONTEND_DIST = BASE.parent / "frontend" / "dist"
-engine = create_engine(os.environ.get("DATABASE_URL", f"sqlite:///{BASE / 'messmind.db'}"))
+ON_VERCEL = bool(os.environ.get("VERCEL"))
+# serverless filesystems are read-only except /tmp
+DB_PATH = Path("/tmp/messmind.db") if ON_VERCEL else BASE / "messmind.db"
+engine = create_engine(os.environ.get("DATABASE_URL", f"sqlite:///{DB_PATH}"))
 
 app = FastAPI(title="MessMind API", version="1.0",
               description="Predict. Prevent. Preserve. — AI-powered food-waste prediction.")
@@ -57,6 +65,8 @@ def table(name: str) -> pd.DataFrame:
 class State:
     """Cleaned data + trained model, rebuilt whenever new data arrives."""
 
+    ready = False
+
     def rebuild(self, make_plots: bool = True):
         self.raw = table("raw_records")
         self.clean, self.report = clean(self.raw)
@@ -67,9 +77,13 @@ class State:
         self.inventory = table("inventory")
         self.model = DemandModel(self.clean, mess="Hostel A")
         self.trained_at = datetime.now().isoformat(timespec="seconds")
-        if make_plots:
+        if make_plots and plots is not None and not ON_VERCEL:
             self.figures = plots.generate(self.clean, self.feats, self.waste, self.feedback,
                                           self.model.test_frame, self.model.importance, REPORTS)
+        elif not getattr(self, "figures", None):
+            manifest = REPORTS / "figures.json"
+            self.figures = json.loads(manifest.read_text()) if manifest.exists() else []
+        self.ready = True
 
     def mess_df(self, mess: str):
         d = self.clean[self.clean["mess"] == mess]
@@ -81,14 +95,22 @@ class State:
 S = State()
 
 
-@app.on_event("startup")
-def _startup():
-    seed_database()
-    S.rebuild()
+def ensure_ready():
+    if not S.ready:
+        seed_database()
+        S.rebuild()
 
 
-REPORTS.mkdir(exist_ok=True)
-app.mount("/reports", StaticFiles(directory=REPORTS), name="reports")
+@app.middleware("http")
+async def _lazy_init(request, call_next):
+    # works for both a long-running server and serverless cold starts
+    if request.url.path.startswith("/api"):
+        ensure_ready()
+    return await call_next(request)
+
+
+if REPORTS.exists():
+    app.mount("/reports", StaticFiles(directory=REPORTS), name="reports")
 
 
 # ============================================================================ overview / DS lab

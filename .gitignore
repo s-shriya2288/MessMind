@@ -11,3 +11,8 @@ frontend/dist/
 
 # OS
 .DS_Store
+
+# Vercel build artefacts
+frontend/public/reports/
+.vercel
+.env*

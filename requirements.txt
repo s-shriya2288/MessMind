@@ -1,0 +1,9 @@
+# Slim dependency set for the Vercel serverless function.
+# (Local development uses backend/requirements.txt, which adds xgboost, matplotlib, seaborn, jupyter.)
+pandas
+numpy
+scikit-learn
+fastapi
+python-multipart
+openpyxl
+sqlalchemy

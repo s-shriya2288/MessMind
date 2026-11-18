@@ -123,4 +123,6 @@ def generate(clean: pd.DataFrame, feats: pd.DataFrame, waste: pd.DataFrame, feed
     ax.axvline(0, color="k", lw=1)
     ax.set_title("Residual distribution (actual − predicted)")
     _save(fig, out_dir, "residuals", "Residuals", "Centred near zero → no strong systematic bias.", figs)
+    import json
+    (out_dir / "figures.json").write_text(json.dumps(figs, indent=1, ensure_ascii=False))
     return figs
