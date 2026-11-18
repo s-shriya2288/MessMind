@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root { height: 100%; }
+body { background: #f6f5f1; color: #0b0b0b; -webkit-font-smoothing: antialiased; }
+.recharts-cartesian-axis-tick-value { font-variant-numeric: tabular-nums; }
+.recharts-legend-item-text { color: #52514e !important; font-size: 12px; }

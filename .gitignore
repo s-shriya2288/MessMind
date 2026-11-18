@@ -1,0 +1,13 @@
+# Python
+backend/.venv/
+__pycache__/
+*.pyc
+backend/messmind.db
+.ipynb_checkpoints/
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# OS
+.DS_Store
